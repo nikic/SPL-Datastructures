@@ -21,7 +21,7 @@ extern zend_module_entry spl_datastructures_module_entry;
      zend_class_entry ce;                                                    \
      INIT_CLASS_ENTRY(ce, name, methods)                                     \
      dst_ce = zend_register_internal_class(&ce TSRMLS_CC);                   \
-     dst_ce->create_object = create_handler;                                    \
+     dst_ce->create_object = create_handler;                                 \
 } while(0)
 
 #define SPL_DS_ME(class, method, arg_info, flags) \

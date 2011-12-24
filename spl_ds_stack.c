@@ -24,6 +24,15 @@ static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
 
     zend_object_std_dtor(&obj->std TSRMLS_CC);
 
+    while (obj->head != NULL) {
+        spl_ds_stack_element *current = obj->head;
+        obj->head = current->next;
+
+        zend_ptr_dtor(current->data);
+
+        efree(current);
+    }
+
     efree(obj);
 }
 
@@ -46,17 +55,56 @@ static zend_object_value spl_ds_stack_create_handler(zend_class_entry *class_typ
 
 SPL_DS_METHOD(Stack, peek)
 {
+    spl_ds_stack_object *obj;
 
+    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+
+    if (obj->head == NULL) {
+        //zend_throw_exception(x, "Can't peek an empty stack", 0 TSRMLS_CC);
+        return;
+    }
+
+    RETURN_ZVAL(obj->head->data, 1, 0);
 }
 
 SPL_DS_METHOD(Stack, pop)
 {
+    spl_ds_stack_object *obj;
+    spl_ds_stack_element *head;
 
+    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+
+    if (obj->head == NULL) {
+        //zend_throw_exception(x, "Can't pop an empty stack", 0 TSRMLS_CC);
+        return;
+    }
+
+    head = obj->head;
+
+    RETVAL_ZVAL(head->data, 1, 1);
+
+    obj->head = head->next;
+    efree(head);
 }
 
 SPL_DS_METHOD(Stack, push)
 {
+    zval *item;
+    spl_ds_stack_object *obj;
 
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
+        return;
+    }
+
+    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+
+    spl_ds_stack_element *element = emalloc(sizeof(spl_ds_stack_element));
+
+    Z_ADDREF_P(item);
+    element->data = item;
+
+    element->next = obj->head;
+    obj->head = element;
 }
 
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_Stack_void, 0)
