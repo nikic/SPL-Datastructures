@@ -36,6 +36,37 @@ static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
     efree(obj);
 }
 
+static void spl_ds_stack_clone_storage(void *object, void **target_ptr)
+{
+    spl_ds_stack_object *obj_orig, *obj_clone;
+
+    obj_orig = (spl_ds_stack_object *) object;
+    obj_clone = (spl_ds_stack_object *) emalloc(sizeof(spl_ds_stack_object));
+
+    memcpy(obj_clone, obj_orig, sizeof(spl_ds_stack_object));
+
+    if (obj_orig->head != NULL) {
+        spl_ds_stack_element *current_orig, **current_clone;
+
+        current_orig  = obj_orig ->head;
+        current_clone = &obj_clone->head;
+
+        do {
+            *current_clone = (spl_ds_stack_element *) emalloc(sizeof(spl_ds_stack_element));
+
+            (*current_clone)->data = current_orig->data;
+            Z_ADDREF_P(current_orig->data); 
+
+            current_orig  = current_orig ->next;
+            current_clone = &(*current_clone)->next;
+        } while (current_orig != NULL);
+
+        *current_clone = NULL;
+    }
+
+    *target_ptr = obj_clone;
+}
+
 static zend_object_value spl_ds_stack_create_handler(zend_class_entry *class_type TSRMLS_DC)
 {
     zend_object_value retval;
@@ -47,7 +78,7 @@ static zend_object_value spl_ds_stack_create_handler(zend_class_entry *class_typ
     zend_object_std_init(&obj->std, class_type TSRMLS_CC);
     object_properties_init(&obj->std, class_type);
 
-    retval.handle = zend_objects_store_put(obj, NULL, spl_ds_stack_free_storage, NULL TSRMLS_CC);
+    retval.handle = zend_objects_store_put(obj, NULL, spl_ds_stack_free_storage, spl_ds_stack_clone_storage TSRMLS_CC);
     retval.handlers = &spl_ds_handlers_Stack;
 
     return retval;
@@ -129,6 +160,7 @@ PHP_MINIT_FUNCTION(spl_ds_stack)
         zend_get_std_object_handlers(),
         sizeof(zend_object_handlers)
     );
+    spl_ds_handlers_Stack.clone_obj = zend_objects_store_clone_obj;
 
     return SUCCESS;
 }
