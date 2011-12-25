@@ -4,6 +4,7 @@
 
 #include "php.h"
 #include "php_spl_ds.h"
+#include "spl_ds_collection.h"
 
 zend_class_entry *spl_ds_ce_Stack;
 zend_object_handlers spl_ds_handlers_Stack;
@@ -138,6 +139,19 @@ SPL_DS_METHOD(Stack, push)
     obj->head = element;
 }
 
+SPL_DS_METHOD(Stack, isEmpty)
+{
+    spl_ds_stack_object *obj;
+
+    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+
+    if (obj->head == NULL) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
+
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_Stack_void, 0)
 ZEND_END_ARG_INFO()
 
@@ -146,15 +160,18 @@ ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_Stack_push, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_Stack[] = {
-    SPL_DS_ME(Stack, peek, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, pop,  spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, push, spl_ds_arg_info_Stack_push, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, peek,    spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, pop,     spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, push,    spl_ds_arg_info_Stack_push, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, isEmpty, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
 PHP_MINIT_FUNCTION(spl_ds_stack)
 {
     SPL_DS_REGISTER_CLASS(Stack, spl_ds_stack_create_handler);
+    zend_class_implements(spl_ds_ce_Stack TSRMLS_CC, 1, spl_ds_ce_Collection);
+
     memcpy(
         &spl_ds_handlers_Stack,
         zend_get_std_object_handlers(),
