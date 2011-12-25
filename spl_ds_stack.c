@@ -28,7 +28,7 @@ static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
         spl_ds_stack_element *current = obj->head;
         obj->head = current->next;
 
-        zend_ptr_dtor(current->data);
+        zval_ptr_dtor(&current->data);
 
         efree(current);
     }
