@@ -4,10 +4,12 @@
 
 #include "php.h"
 #include "php_spl_ds.h"
+#include "spl_ds_collection.h"
 #include "spl_ds_stack.h"
 
 PHP_MINIT_FUNCTION(spl_datastructures)
 {
+    PHP_MINIT(spl_ds_collection)(INIT_FUNC_ARGS_PASSTHRU);
     PHP_MINIT(spl_ds_stack)(INIT_FUNC_ARGS_PASSTHRU);
 
     return SUCCESS;
