@@ -19,12 +19,8 @@ typedef struct _spl_ds_stack_object {
     spl_ds_stack_element *head;
 } spl_ds_stack_object;
 
-static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
+static void spl_ds_stack_clear(spl_ds_stack_object *obj)
 {
-    spl_ds_stack_object *obj = (spl_ds_stack_object *) object;
-
-    zend_object_std_dtor(&obj->std TSRMLS_CC);
-
     while (obj->head != NULL) {
         spl_ds_stack_element *current = obj->head;
         obj->head = current->next;
@@ -33,6 +29,15 @@ static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
 
         efree(current);
     }
+}
+
+static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
+{
+    spl_ds_stack_object *obj = (spl_ds_stack_object *) object;
+
+    spl_ds_stack_clear(obj);
+
+    zend_object_std_dtor(&obj->std TSRMLS_CC);
 
     efree(obj);
 }
@@ -139,6 +144,15 @@ SPL_DS_METHOD(Stack, push)
     obj->head = element;
 }
 
+SPL_DS_METHOD(Stack, clear)
+{
+    spl_ds_stack_object *obj;
+
+    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+
+    spl_ds_stack_clear(obj);
+}
+
 SPL_DS_METHOD(Stack, isEmpty)
 {
     spl_ds_stack_object *obj;
@@ -163,6 +177,7 @@ const zend_function_entry spl_ds_methods_Stack[] = {
     SPL_DS_ME(Stack, peek,    spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     SPL_DS_ME(Stack, pop,     spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     SPL_DS_ME(Stack, push,    spl_ds_arg_info_Stack_push, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, clear,   spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     SPL_DS_ME(Stack, isEmpty, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
