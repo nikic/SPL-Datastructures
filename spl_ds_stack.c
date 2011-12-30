@@ -133,12 +133,12 @@ ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_Stack_push, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_Stack[] = {
-    SPL_DS_ME(Stack, peek,    spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, pop,     spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, push,    spl_ds_arg_info_Stack_push, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, clear,   spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, isEmpty, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
-    SPL_DS_ME(Stack, toArray, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, peek,    spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(Stack, pop,     spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(Stack, push,    spl_ds_arg_info_Stack_push)
+    SPL_DS_ME(Stack, clear,   spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(Stack, isEmpty, spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(Stack, toArray, spl_ds_arg_info_Stack_void)
     PHP_FE_END
 };
 

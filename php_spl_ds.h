@@ -37,8 +37,8 @@ extern zend_module_entry spl_datastructures_module_entry;
     dst_ce = zend_register_internal_interface(&ce TSRMLS_CC);    \
 } while(0)
 
-#define SPL_DS_ME(class, method, arg_info, flags) \
-    PHP_ME(spl_ds_ ## class, method, arg_info, flags)
+#define SPL_DS_ME(class, method, arg_info) \
+    PHP_ME(spl_ds_ ## class, method, arg_info, ZEND_ACC_PUBLIC)
 
 #define SPL_DS_ABSTRACT_ME(class, method, arg_info) \
     PHP_ABSTRACT_ME(spl_ds_ ## class, method, arg_info)
