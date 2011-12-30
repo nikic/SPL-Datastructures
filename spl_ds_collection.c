@@ -4,6 +4,7 @@
 
 #include "php.h"
 #include "php_spl_ds.h"
+#include "spl/spl_iterators.h"
 
 zend_class_entry *spl_ds_ce_Collection;
 
@@ -20,4 +21,5 @@ const zend_function_entry spl_ds_methods_Collection[] = {
 PHP_MINIT_FUNCTION(spl_ds_collection)
 {
     SPL_DS_REGISTER_INTERFACE(Collection); 
+    zend_class_implements(spl_ds_ce_Collection TSRMLS_CC, 1, spl_ce_Countable);
 }

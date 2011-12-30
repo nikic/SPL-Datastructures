@@ -125,6 +125,13 @@ SPL_DS_METHOD(Stack, toArray)
     RETURN_ZVAL(retval, 1, 1);
 }
 
+SPL_DS_METHOD(Stack, count)
+{
+    long count = spl_ds_dll_count(SPL_DS_STACK_GET_LIST());
+
+    RETURN_LONG(count);
+}
+
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_Stack_void, 0)
 ZEND_END_ARG_INFO()
 
@@ -139,6 +146,7 @@ const zend_function_entry spl_ds_methods_Stack[] = {
     SPL_DS_ME(Stack, clear,   spl_ds_arg_info_Stack_void)
     SPL_DS_ME(Stack, isEmpty, spl_ds_arg_info_Stack_void)
     SPL_DS_ME(Stack, toArray, spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(Stack, count,   spl_ds_arg_info_Stack_void)
     PHP_FE_END
 };
 
