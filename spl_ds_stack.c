@@ -5,37 +5,24 @@
 #include "php.h"
 #include "php_spl_ds.h"
 #include "spl_ds_collection.h"
+#include "spl_ds_dll.h"
 
 zend_class_entry *spl_ds_ce_Stack;
 zend_object_handlers spl_ds_handlers_Stack;
 
-typedef struct _spl_ds_stack_element {
-    zval                         *data;
-    struct _spl_ds_stack_element *next;
-} spl_ds_stack_element;
-
 typedef struct _spl_ds_stack_object {
-    zend_object           std;
-    spl_ds_stack_element *head;
+    zend_object  std;
+    spl_ds_dll  *list;
 } spl_ds_stack_object;
 
-static void spl_ds_stack_clear(spl_ds_stack_object *obj)
-{
-    while (obj->head != NULL) {
-        spl_ds_stack_element *current = obj->head;
-        obj->head = current->next;
-
-        zval_ptr_dtor(&current->data);
-
-        efree(current);
-    }
-}
+#define SPL_DS_STACK_GET_LIST() \
+    ((spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC))->list
 
 static void spl_ds_stack_free_storage(void *object TSRMLS_DC)
 {
     spl_ds_stack_object *obj = (spl_ds_stack_object *) object;
 
-    spl_ds_stack_clear(obj);
+    spl_ds_dll_free(obj->list);
 
     zend_object_std_dtor(&obj->std TSRMLS_CC);
 
@@ -51,24 +38,7 @@ static void spl_ds_stack_clone_storage(void *object, void **target_ptr)
 
     memcpy(obj_clone, obj_orig, sizeof(spl_ds_stack_object));
 
-    if (obj_orig->head != NULL) {
-        spl_ds_stack_element *current_orig, **current_clone;
-
-        current_orig  = obj_orig ->head;
-        current_clone = &obj_clone->head;
-
-        do {
-            *current_clone = (spl_ds_stack_element *) emalloc(sizeof(spl_ds_stack_element));
-
-            (*current_clone)->data = current_orig->data;
-            Z_ADDREF_P(current_orig->data); 
-
-            current_orig  = current_orig ->next;
-            current_clone = &(*current_clone)->next;
-        } while (current_orig != NULL);
-
-        *current_clone = NULL;
-    }
+    obj_clone->list = spl_ds_dll_clone(obj_orig->list);
 
     *target_ptr = obj_clone;
 }
@@ -79,10 +49,11 @@ static zend_object_value spl_ds_stack_create_handler(zend_class_entry *class_typ
     spl_ds_stack_object *obj;
 
     obj = emalloc(sizeof(spl_ds_stack_object));
-    memset(obj, 0, sizeof(spl_ds_stack_object));
 
     zend_object_std_init(&obj->std, class_type TSRMLS_CC);
     object_properties_init(&obj->std, class_type);
+
+    obj->list = spl_ds_dll_create();
 
     retval.handle = zend_objects_store_put(obj, NULL, spl_ds_stack_free_storage, spl_ds_stack_clone_storage TSRMLS_CC);
     retval.handlers = &spl_ds_handlers_Stack;
@@ -92,74 +63,55 @@ static zend_object_value spl_ds_stack_create_handler(zend_class_entry *class_typ
 
 SPL_DS_METHOD(Stack, peek)
 {
-    spl_ds_stack_object *obj;
+    spl_ds_dll *list;
+    zval *item;
 
-    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+    list = SPL_DS_STACK_GET_LIST();
 
-    if (obj->head == NULL) {
+    if (spl_ds_dll_is_empty(list)) {
         //zend_throw_exception(x, "Can't peek an empty stack", 0 TSRMLS_CC);
         return;
     }
 
-    RETURN_ZVAL(obj->head->data, 1, 0);
+    item = spl_ds_dll_get_last(list);
+    RETURN_ZVAL(item, 1, 1);
 }
 
 SPL_DS_METHOD(Stack, pop)
 {
-    spl_ds_stack_object *obj;
-    spl_ds_stack_element *head;
+    spl_ds_dll *list;
+    zval *item;
 
-    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+    list = SPL_DS_STACK_GET_LIST();
 
-    if (obj->head == NULL) {
+    if (spl_ds_dll_is_empty(list)) {
         //zend_throw_exception(x, "Can't pop an empty stack", 0 TSRMLS_CC);
         return;
     }
 
-    head = obj->head;
-
-    RETVAL_ZVAL(head->data, 1, 1);
-
-    obj->head = head->next;
-    efree(head);
+    item = spl_ds_dll_remove_last(list);
+    RETURN_ZVAL(item, 1, 1);
 }
 
 SPL_DS_METHOD(Stack, push)
 {
     zval *item;
-    spl_ds_stack_object *obj;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
         return;
     }
 
-    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
-
-    spl_ds_stack_element *element = emalloc(sizeof(spl_ds_stack_element));
-
-    Z_ADDREF_P(item);
-    element->data = item;
-
-    element->next = obj->head;
-    obj->head = element;
+    spl_ds_dll_add_last(SPL_DS_STACK_GET_LIST(), item);
 }
 
 SPL_DS_METHOD(Stack, clear)
 {
-    spl_ds_stack_object *obj;
-
-    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
-
-    spl_ds_stack_clear(obj);
+    spl_ds_dll_clear(SPL_DS_STACK_GET_LIST());
 }
 
 SPL_DS_METHOD(Stack, isEmpty)
 {
-    spl_ds_stack_object *obj;
-
-    obj = (spl_ds_stack_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
-
-    if (obj->head == NULL) {
+    if (spl_ds_dll_is_empty(SPL_DS_STACK_GET_LIST())) {
         RETURN_TRUE;
     } else {
         RETURN_FALSE;
