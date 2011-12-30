@@ -49,6 +49,26 @@ spl_ds_dll *spl_ds_dll_clone(spl_ds_dll *orig)
     return clone;
 }
 
+zval *spl_ds_dll_to_array(spl_ds_dll *list)
+{
+    zval *retval;
+
+    ALLOC_INIT_ZVAL(retval);
+    array_init(retval);
+
+    if (list->first != NULL) {
+        spl_ds_dll_element *current = list->first;
+
+        do {
+            add_next_index_zval(retval, current->data);
+
+            current = current->next;
+        } while (current != NULL);
+    }
+
+    return retval;
+}
+
 zend_bool spl_ds_dll_is_empty(spl_ds_dll *list)
 {
     return list->last == NULL;

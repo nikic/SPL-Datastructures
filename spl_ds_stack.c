@@ -118,6 +118,13 @@ SPL_DS_METHOD(Stack, isEmpty)
     }
 }
 
+SPL_DS_METHOD(Stack, toArray)
+{
+    zval *retval = spl_ds_dll_to_array(SPL_DS_STACK_GET_LIST());
+    
+    RETURN_ZVAL(retval, 1, 1);
+}
+
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_Stack_void, 0)
 ZEND_END_ARG_INFO()
 
@@ -131,6 +138,7 @@ const zend_function_entry spl_ds_methods_Stack[] = {
     SPL_DS_ME(Stack, push,    spl_ds_arg_info_Stack_push, ZEND_ACC_PUBLIC)
     SPL_DS_ME(Stack, clear,   spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     SPL_DS_ME(Stack, isEmpty, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
+    SPL_DS_ME(Stack, toArray, spl_ds_arg_info_Stack_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
