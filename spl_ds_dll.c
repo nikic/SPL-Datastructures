@@ -105,80 +105,66 @@ void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
     list->count++;
 }
 
-zval *spl_ds_dll_get_first(spl_ds_dll *list)
+zval *spl_ds_dll_get_data(spl_ds_dll_element *element)
 {
-    if (list->first == NULL) {
+    if (element == NULL) {
         return NULL;
     }
 
-    Z_ADDREF_P(list->first->data);
+    Z_ADDREF_P(element->data);
+    return element->data;
+}
 
-    return list->first->data;
+zval *spl_ds_dll_get_first(spl_ds_dll *list)
+{
+    return spl_ds_dll_get_data(list->first);
 }
 
 zval *spl_ds_dll_get_last(spl_ds_dll *list)
 {
-    if (list->last == NULL) {
+    return spl_ds_dll_get_data(list->last);
+}
+
+zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
+{
+    zval *retval;
+
+    // ensure that there actually is something to remove
+    if (element == NULL) {
         return NULL;
     }
 
-    Z_ADDREF_P(list->last->data);
+    list->count--;
 
-    return list->last->data;
+    // remove references to element from prev and next element
+    if (element->prev != NULL) {
+        element->prev->next = NULL;
+    }
+    if (element->next != NULL) {
+        element->next->prev = NULL;
+    }
+
+    // if element is first/last move the first/last pointer to next/prev
+    if (element == list->first) {
+        list->first = element->next;
+    }
+    if (element == list->last) {
+        list->last = element->prev;
+    }
+
+    retval = element->data;
+
+    efree(element);
+
+    return retval;
 }
 
 zval *spl_ds_dll_remove_first(spl_ds_dll *list)
 {
-    zval *retval;
-    spl_ds_dll_element *first = list->first;
-
-    if (first == NULL) {
-        return NULL;
-    }
-
-    retval = first->data;
-
-    list->first = first->next;
-
-    if (first->next != NULL) {
-        first->next->prev = NULL;
-    }
-
-    if (list->last == first) {
-        list->last = NULL;
-    }
-
-    efree(first);
-
-    list->count--;
-
-    return retval;
+    return spl_ds_dll_remove_element(list, list->first);
 }
 
 zval *spl_ds_dll_remove_last(spl_ds_dll *list)
 {
-    zval *retval;
-    spl_ds_dll_element *last = list->last;
-
-    if (last == NULL) {
-        return NULL;
-    }
-
-    retval = last->data;
-
-    list->last = last->prev;
-
-    if (last->prev != NULL) {
-        last->prev->next = NULL;
-    }
-
-    if (list->first == last) {
-        list->first = NULL;
-    }
-
-    efree(last);
-
-    list->count--;
-
-    return retval;
+    return spl_ds_dll_remove_element(list, list->last);
 }
