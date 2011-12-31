@@ -2,7 +2,7 @@
 #define SPL_DS_DLL_H 1
 
 typedef struct _spl_ds_dll_element {
-    zval                       *data;
+    zval                       *zval;
     struct _spl_ds_dll_element *next;
     struct _spl_ds_dll_element *prev;
 } spl_ds_dll_element;

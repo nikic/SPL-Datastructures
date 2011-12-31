@@ -22,7 +22,7 @@ void spl_ds_dll_clear(spl_ds_dll *list)
         spl_ds_dll_element *current = list->first;
         list->first = current->next;
 
-        zval_ptr_dtor(&current->data);
+        zval_ptr_dtor(&current->zval);
 
         efree(current);
     }
@@ -43,7 +43,7 @@ spl_ds_dll *spl_ds_dll_clone(spl_ds_dll *orig)
         spl_ds_dll_element *current = orig->first;
 
         do {
-            spl_ds_dll_add_last(clone, current->data);
+            spl_ds_dll_add_last(clone, current->zval);
             
             current = current->next;
         } while (current != NULL);
@@ -63,7 +63,7 @@ zval *spl_ds_dll_to_array(spl_ds_dll *list)
         spl_ds_dll_element *current = list->first;
 
         do {
-            add_next_index_zval(retval, current->data);
+            add_next_index_zval(retval, current->zval);
 
             current = current->next;
         } while (current != NULL);
@@ -87,7 +87,7 @@ void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
     spl_ds_dll_element *element = emalloc(sizeof(spl_ds_dll_element));
 
     Z_ADDREF_P(item);
-    element->data = item;
+    element->zval = item;
 
     element->next = NULL;
     element->prev = list->last;
@@ -105,24 +105,24 @@ void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
     list->count++;
 }
 
-zval *spl_ds_dll_get_data(spl_ds_dll_element *element)
+zval *spl_ds_dll_get_zval(spl_ds_dll_element *element)
 {
     if (element == NULL) {
         return NULL;
     }
 
-    Z_ADDREF_P(element->data);
-    return element->data;
+    Z_ADDREF_P(element->zval);
+    return element->zval;
 }
 
 zval *spl_ds_dll_get_first(spl_ds_dll *list)
 {
-    return spl_ds_dll_get_data(list->first);
+    return spl_ds_dll_get_zval(list->first);
 }
 
 zval *spl_ds_dll_get_last(spl_ds_dll *list)
 {
-    return spl_ds_dll_get_data(list->last);
+    return spl_ds_dll_get_zval(list->last);
 }
 
 zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
@@ -152,7 +152,7 @@ zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
         list->last = element->prev;
     }
 
-    retval = element->data;
+    retval = element->zval;
 
     efree(element);
 
