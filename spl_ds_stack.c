@@ -136,7 +136,7 @@ ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_Stack_void, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_Stack_push, 0, 0, 1)
-     ZEND_ARG_INFO(0, item)
+    ZEND_ARG_INFO(0, item)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_Stack[] = {

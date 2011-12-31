@@ -105,6 +105,17 @@ void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
     list->count++;
 }
 
+zval *spl_ds_dll_get_first(spl_ds_dll *list)
+{
+    if (list->first == NULL) {
+        return NULL;
+    }
+
+    Z_ADDREF_P(list->first->data);
+
+    return list->first->data;
+}
+
 zval *spl_ds_dll_get_last(spl_ds_dll *list)
 {
     if (list->last == NULL) {
@@ -114,6 +125,34 @@ zval *spl_ds_dll_get_last(spl_ds_dll *list)
     Z_ADDREF_P(list->last->data);
 
     return list->last->data;
+}
+
+zval *spl_ds_dll_remove_first(spl_ds_dll *list)
+{
+    zval *retval;
+    spl_ds_dll_element *first = list->first;
+
+    if (first == NULL) {
+        return NULL;
+    }
+
+    retval = first->data;
+
+    list->first = first->next;
+
+    if (first->next != NULL) {
+        first->next->prev = NULL;
+    }
+
+    if (list->last == first) {
+        list->last = NULL;
+    }
+
+    efree(first);
+
+    list->count--;
+
+    return retval;
 }
 
 zval *spl_ds_dll_remove_last(spl_ds_dll *list)
