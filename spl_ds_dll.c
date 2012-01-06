@@ -63,6 +63,7 @@ zval *spl_ds_dll_to_array(spl_ds_dll *list)
         spl_ds_dll_element *current = list->first;
 
         do {
+            Z_ADDREF_P(current->zval);
             add_next_index_zval(retval, current->zval);
 
             current = current->next;
