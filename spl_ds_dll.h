@@ -41,6 +41,6 @@ typedef struct _spl_ds_dll_object {
 
 /* PHP object handlers */
 void spl_ds_dll_object_free_storage(void *object TSRMLS_DC);
-void spl_ds_dll_object_clone_storage(void *object, void **target_ptr);
+void spl_ds_dll_object_clone_storage(spl_ds_dll_object *object, spl_ds_dll_object **obj_clone_ptr);
 
 #endif

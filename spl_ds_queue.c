@@ -22,7 +22,11 @@ static zend_object_value spl_ds_queue_create_handler(zend_class_entry *class_typ
 
     obj->list = spl_ds_dll_create();
 
-    retval.handle = zend_objects_store_put(obj, NULL, spl_ds_dll_object_free_storage, spl_ds_dll_object_clone_storage TSRMLS_CC);
+    retval.handle = zend_objects_store_put(obj, NULL,
+        spl_ds_dll_object_free_storage,
+        (zend_objects_store_clone_t) spl_ds_dll_object_clone_storage
+        TSRMLS_CC
+    );
     retval.handlers = &spl_ds_handlers_Queue;
 
     return retval;

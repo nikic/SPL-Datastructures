@@ -189,16 +189,10 @@ void spl_ds_dll_object_free_storage(void *object TSRMLS_DC)
     efree(obj);
 }
 
-void spl_ds_dll_object_clone_storage(void *object, void **target_ptr)
+void spl_ds_dll_object_clone_storage(spl_ds_dll_object *obj_orig, spl_ds_dll_object **obj_clone_ptr)
 {
-    spl_ds_dll_object *obj_orig, *obj_clone;
+    *obj_clone_ptr = (spl_ds_dll_object *) emalloc(sizeof(spl_ds_dll_object));
+    memcpy(*obj_clone_ptr, obj_orig, sizeof(spl_ds_dll_object));
 
-    obj_orig = (spl_ds_dll_object *) object;
-    obj_clone = (spl_ds_dll_object *) emalloc(sizeof(spl_ds_dll_object));
-
-    memcpy(obj_clone, obj_orig, sizeof(spl_ds_dll_object));
-
-    obj_clone->list = spl_ds_dll_clone(obj_orig->list);
-
-    *target_ptr = obj_clone;
+    (*obj_clone_ptr)->list = spl_ds_dll_clone(obj_orig->list);
 }
