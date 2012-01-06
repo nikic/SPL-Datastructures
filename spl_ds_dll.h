@@ -43,4 +43,10 @@ typedef struct _spl_ds_dll_object {
 void spl_ds_dll_object_free_storage(spl_ds_dll_object *obj TSRMLS_DC);
 void spl_ds_dll_object_clone_storage(spl_ds_dll_object *obj_orig, spl_ds_dll_object **obj_clone_ptr);
 
+/* Shared DLL methods */
+SPL_DS_METHOD(DLL, clear);
+SPL_DS_METHOD(DLL, isEmpty);
+SPL_DS_METHOD(DLL, toArray);
+SPL_DS_METHOD(DLL, count);
+
 #endif

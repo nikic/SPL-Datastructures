@@ -3,6 +3,7 @@
 #endif
 
 #include "php.h"
+#include "php_spl_ds.h"
 #include "spl_ds_dll.h"
 
 /**
@@ -193,4 +194,36 @@ void spl_ds_dll_object_clone_storage(spl_ds_dll_object *obj_orig, spl_ds_dll_obj
     memcpy(*obj_clone_ptr, obj_orig, sizeof(spl_ds_dll_object));
 
     (*obj_clone_ptr)->list = spl_ds_dll_clone(obj_orig->list);
+}
+
+/**
+ * Shared DLL methods
+ */
+
+SPL_DS_METHOD(DLL, clear)
+{
+    spl_ds_dll_clear(SPL_DS_DLL_GET_LIST());
+}
+
+SPL_DS_METHOD(DLL, isEmpty)
+{
+    if (spl_ds_dll_is_empty(SPL_DS_DLL_GET_LIST())) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
+
+SPL_DS_METHOD(DLL, toArray)
+{
+    zval *retval = spl_ds_dll_to_array(SPL_DS_DLL_GET_LIST());
+    
+    RETURN_ZVAL(retval, 1, 1);
+}
+
+SPL_DS_METHOD(DLL, count)
+{
+    long count = spl_ds_dll_count(SPL_DS_DLL_GET_LIST());
+
+    RETURN_LONG(count);
 }
