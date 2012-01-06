@@ -178,10 +178,8 @@ zval *spl_ds_dll_remove_last(spl_ds_dll *list)
  * PHP object handlers
  */
 
-void spl_ds_dll_object_free_storage(void *object TSRMLS_DC)
+void spl_ds_dll_object_free_storage(spl_ds_dll_object *obj TSRMLS_DC)
 {
-    spl_ds_dll_object *obj = (spl_ds_dll_object *) object;
-
     spl_ds_dll_free(obj->list);
 
     zend_object_std_dtor(&obj->std TSRMLS_CC);

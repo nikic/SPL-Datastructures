@@ -40,7 +40,7 @@ typedef struct _spl_ds_dll_object {
     ((spl_ds_dll_object *) zend_object_store_get_object(getThis() TSRMLS_CC))->list
 
 /* PHP object handlers */
-void spl_ds_dll_object_free_storage(void *object TSRMLS_DC);
-void spl_ds_dll_object_clone_storage(spl_ds_dll_object *object, spl_ds_dll_object **obj_clone_ptr);
+void spl_ds_dll_object_free_storage(spl_ds_dll_object *obj TSRMLS_DC);
+void spl_ds_dll_object_clone_storage(spl_ds_dll_object *obj_orig, spl_ds_dll_object **obj_clone_ptr);
 
 #endif
