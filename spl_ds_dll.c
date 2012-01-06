@@ -5,6 +5,10 @@
 #include "php.h"
 #include "spl_ds_dll.h"
 
+/**
+ * Internal DLL API
+ */
+
 spl_ds_dll *spl_ds_dll_create()
 {
     spl_ds_dll *list = emalloc(sizeof(spl_ds_dll));
@@ -168,4 +172,33 @@ zval *spl_ds_dll_remove_first(spl_ds_dll *list)
 zval *spl_ds_dll_remove_last(spl_ds_dll *list)
 {
     return spl_ds_dll_remove_element(list, list->last);
+}
+
+/**
+ * PHP object handlers
+ */
+
+void spl_ds_dll_object_free_storage(void *object TSRMLS_DC)
+{
+    spl_ds_dll_object *obj = (spl_ds_dll_object *) object;
+
+    spl_ds_dll_free(obj->list);
+
+    zend_object_std_dtor(&obj->std TSRMLS_CC);
+
+    efree(obj);
+}
+
+void spl_ds_dll_object_clone_storage(void *object, void **target_ptr)
+{
+    spl_ds_dll_object *obj_orig, *obj_clone;
+
+    obj_orig = (spl_ds_dll_object *) object;
+    obj_clone = (spl_ds_dll_object *) emalloc(sizeof(spl_ds_dll_object));
+
+    memcpy(obj_clone, obj_orig, sizeof(spl_ds_dll_object));
+
+    obj_clone->list = spl_ds_dll_clone(obj_orig->list);
+
+    *target_ptr = obj_clone;
 }
