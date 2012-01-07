@@ -6,6 +6,7 @@
 #include "php_spl_ds.h"
 #include "spl_ds_collection.h"
 #include "spl_ds_dll.h"
+#include "spl/spl_exceptions.h"
 
 zend_class_entry *spl_ds_ce_Stack;
 zend_object_handlers spl_ds_handlers_Stack;
@@ -43,10 +44,7 @@ SPL_DS_METHOD(Stack, peek)
 
     list = SPL_DS_DLL_GET_LIST();
 
-    if (spl_ds_dll_is_empty(list)) {
-        //zend_throw_exception(x, "Can't peek an empty stack", 0 TSRMLS_CC);
-        return;
-    }
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't peek an empty stack");
 
     item = spl_ds_dll_get_last(list);
     RETURN_ZVAL(item, 1, 1);
@@ -63,10 +61,7 @@ SPL_DS_METHOD(Stack, pop)
 
     list = SPL_DS_DLL_GET_LIST();
 
-    if (spl_ds_dll_is_empty(list)) {
-        //zend_throw_exception(x, "Can't pop an empty stack", 0 TSRMLS_CC);
-        return;
-    }
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't pop an empty stack");
 
     item = spl_ds_dll_remove_last(list);
     RETURN_ZVAL(item, 1, 1);

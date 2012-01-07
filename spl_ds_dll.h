@@ -36,8 +36,15 @@ typedef struct _spl_ds_dll_object {
     spl_ds_dll  *list;
 } spl_ds_dll_object;
 
+/* Helper macros */
 #define SPL_DS_DLL_GET_LIST() \
     ((spl_ds_dll_object *) zend_object_store_get_object(getThis() TSRMLS_CC))->list
+
+#define SPL_DS_DLL_ENSURE_NOT_EMPTY(list, msg)                               \
+    if (spl_ds_dll_is_empty((list))) {                                       \
+        zend_throw_exception(spl_ce_UnderflowException, (msg), 0 TSRMLS_CC); \
+        return;                                                              \
+    }
 
 /* PHP object handlers */
 void spl_ds_dll_object_free_storage(spl_ds_dll_object *obj TSRMLS_DC);

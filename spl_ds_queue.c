@@ -6,6 +6,7 @@
 #include "php_spl_ds.h"
 #include "spl_ds_collection.h"
 #include "spl_ds_dll.h"
+#include "spl/spl_exceptions.h"
 
 zend_class_entry *spl_ds_ce_Queue;
 zend_object_handlers spl_ds_handlers_Queue;
@@ -43,10 +44,7 @@ SPL_DS_METHOD(Queue, peek)
 
     list = SPL_DS_DLL_GET_LIST();
 
-    if (spl_ds_dll_is_empty(list)) {
-        // TODO: throw exception
-        return;
-    }
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't peek an empty queue");
 
     item = spl_ds_dll_get_first(list);
     RETURN_ZVAL(item, 1, 1);
@@ -63,10 +61,7 @@ SPL_DS_METHOD(Queue, pop)
 
     list = SPL_DS_DLL_GET_LIST();
 
-    if (spl_ds_dll_is_empty(list)) {
-        // TODO: throw exception
-        return;
-    }
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't pop an empty queue");
 
     item = spl_ds_dll_remove_first(list);
     RETURN_ZVAL(item, 1, 1);
