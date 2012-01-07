@@ -38,10 +38,10 @@ extern zend_module_entry spl_datastructures_module_entry;
 } while(0)
 
 #define SPL_DS_ME(class, method, arg_info) \
-    PHP_ME(spl_ds_ ## class, method, arg_info, ZEND_ACC_PUBLIC)
+    PHP_ME(spl_ds_ ## class, method, spl_ds_arg_info_ ## arg_info, ZEND_ACC_PUBLIC)
 
 #define SPL_DS_ABSTRACT_ME(class, method, arg_info) \
-    PHP_ABSTRACT_ME(spl_ds_ ## class, method, arg_info)
+    PHP_ABSTRACT_ME(spl_ds_ ## class, method, spl_ds_arg_info_ ## arg_info)
 
 #define SPL_DS_METHOD(class, method) \
     PHP_METHOD(spl_ds_ ## class, method)
