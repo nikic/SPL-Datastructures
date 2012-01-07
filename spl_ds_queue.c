@@ -37,6 +37,10 @@ SPL_DS_METHOD(Queue, peek)
     spl_ds_dll *list;
     zval *item;
 
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
     list = SPL_DS_DLL_GET_LIST();
 
     if (spl_ds_dll_is_empty(list)) {
@@ -52,6 +56,10 @@ SPL_DS_METHOD(Queue, pop)
 {
     spl_ds_dll *list;
     zval *item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
 
     list = SPL_DS_DLL_GET_LIST();
 

@@ -202,28 +202,38 @@ void spl_ds_dll_object_clone_storage(spl_ds_dll_object *obj_orig, spl_ds_dll_obj
 
 SPL_DS_METHOD(DLL, clear)
 {
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
     spl_ds_dll_clear(SPL_DS_DLL_GET_LIST());
 }
 
 SPL_DS_METHOD(DLL, isEmpty)
 {
-    if (spl_ds_dll_is_empty(SPL_DS_DLL_GET_LIST())) {
-        RETURN_TRUE;
-    } else {
-        RETURN_FALSE;
-    }
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }    
+
+    RETURN_BOOL(spl_ds_dll_is_empty(SPL_DS_DLL_GET_LIST()));
 }
 
 SPL_DS_METHOD(DLL, toArray)
 {
     zval *retval = spl_ds_dll_to_array(SPL_DS_DLL_GET_LIST());
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
     
     RETURN_ZVAL(retval, 1, 1);
 }
 
 SPL_DS_METHOD(DLL, count)
 {
-    long count = spl_ds_dll_count(SPL_DS_DLL_GET_LIST());
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
 
-    RETURN_LONG(count);
+    RETURN_LONG(spl_ds_dll_count(SPL_DS_DLL_GET_LIST()));
 }
