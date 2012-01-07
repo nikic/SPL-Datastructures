@@ -7,6 +7,7 @@
 #include "spl_ds_collection.h"
 #include "spl_ds_dll.h"
 #include "spl/spl_exceptions.h"
+#include "zend_interfaces.h"
 
 zend_class_entry *spl_ds_ce_Stack;
 zend_object_handlers spl_ds_handlers_Stack;
@@ -93,13 +94,21 @@ const zend_function_entry spl_ds_methods_Stack[] = {
     SPL_DS_ME(DLL,   isEmpty, spl_ds_arg_info_Stack_void)
     SPL_DS_ME(DLL,   toArray, spl_ds_arg_info_Stack_void)
     SPL_DS_ME(DLL,   count,   spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(DLL,   rewind,  spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(DLL,   current, spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(DLL,   key,     spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(DLL,   next,    spl_ds_arg_info_Stack_void)
+    SPL_DS_ME(DLL,   valid,   spl_ds_arg_info_Stack_void)
     PHP_FE_END
 };
 
 PHP_MINIT_FUNCTION(spl_ds_stack)
 {
     SPL_DS_REGISTER_CLASS(Stack, spl_ds_stack_create_handler);
-    zend_class_implements(spl_ds_ce_Stack TSRMLS_CC, 1, spl_ds_ce_Collection);
+    zend_class_implements(spl_ds_ce_Stack TSRMLS_CC, 2,
+        zend_ce_iterator,
+        spl_ds_ce_Collection
+    );
 
     memcpy(
         &spl_ds_handlers_Stack,

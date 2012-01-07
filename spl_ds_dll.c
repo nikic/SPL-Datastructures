@@ -16,6 +16,10 @@ spl_ds_dll *spl_ds_dll_create()
 
     list->first = NULL;
     list->last  = NULL;
+
+    list->current       = NULL;
+    list->current_index = 0;
+
     list->count = 0;
 
     return list;
@@ -175,6 +179,37 @@ zval *spl_ds_dll_remove_last(spl_ds_dll *list)
     return spl_ds_dll_remove_element(list, list->last);
 }
 
+void spl_ds_dll_iterator_rewind(spl_ds_dll *list)
+{
+    list->current       = list->first;
+    list->current_index = 0;
+}
+
+zval *spl_ds_dll_iterator_get_current_value(spl_ds_dll *list)
+{
+    return spl_ds_dll_get_zval(list->current);
+}
+
+long spl_ds_dll_iterator_get_current_index(spl_ds_dll *list)
+{
+    return list->current_index;
+}
+
+zend_bool spl_ds_dll_iterator_is_valid(spl_ds_dll *list)
+{
+    return list->current != NULL;
+}
+
+void spl_ds_dll_iterator_move_forward(spl_ds_dll *list)
+{
+    if (list->current == NULL) {
+        return;
+    }
+
+    list->current = list->current->next;
+    list->current_index++;
+}
+
 /**
  * PHP object handlers
  */
@@ -236,4 +271,71 @@ SPL_DS_METHOD(DLL, count)
     }
 
     RETURN_LONG(spl_ds_dll_count(SPL_DS_DLL_GET_LIST()));
+}
+
+SPL_DS_METHOD(DLL, rewind)
+{
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    spl_ds_dll_iterator_rewind(SPL_DS_DLL_GET_LIST());
+}
+
+SPL_DS_METHOD(DLL, current)
+{
+    spl_ds_dll *list;
+    zval *item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    } 
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    if (!spl_ds_dll_iterator_is_valid(list)) {
+        return;
+    }
+
+    item = spl_ds_dll_iterator_get_current_value(list);
+    RETURN_ZVAL(item, 1, 1);
+}
+
+SPL_DS_METHOD(DLL, key)
+{
+    spl_ds_dll *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    if (!spl_ds_dll_iterator_is_valid(list)) {
+        return;
+    }
+
+    RETURN_LONG(spl_ds_dll_iterator_get_current_index(list));
+}
+
+SPL_DS_METHOD(DLL, next)
+{
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    spl_ds_dll_iterator_move_forward(SPL_DS_DLL_GET_LIST());
+}
+
+SPL_DS_METHOD(DLL, valid)
+{
+    spl_ds_dll *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    RETURN_BOOL(spl_ds_dll_iterator_is_valid(list));
 }
