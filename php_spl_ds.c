@@ -7,12 +7,14 @@
 #include "classes/spl_ds_collection.h"
 #include "classes/spl_ds_stack.h"
 #include "classes/spl_ds_queue.h"
+#include "classes/spl_ds_linked_list.h"
 
 PHP_MINIT_FUNCTION(spl_datastructures)
 {
     PHP_MINIT(spl_ds_collection)(INIT_FUNC_ARGS_PASSTHRU);
     PHP_MINIT(spl_ds_stack)(INIT_FUNC_ARGS_PASSTHRU);
     PHP_MINIT(spl_ds_queue)(INIT_FUNC_ARGS_PASSTHRU);
+    PHP_MINIT(spl_ds_linked_list)(INIT_FUNC_ARGS_PASSTHRU);
 
     return SUCCESS;
 }
