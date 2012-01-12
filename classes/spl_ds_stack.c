@@ -90,15 +90,7 @@ const zend_function_entry spl_ds_methods_Stack[] = {
     SPL_DS_ME(Stack, peek,    void)
     SPL_DS_ME(Stack, pop,     void)
     SPL_DS_ME(Stack, push,    takesItem)
-    SPL_DS_ME(DLL,   clear,   void)
-    SPL_DS_ME(DLL,   isEmpty, void)
-    SPL_DS_ME(DLL,   toArray, void)
-    SPL_DS_ME(DLL,   count,   void)
-    SPL_DS_ME(DLL,   rewind,  void)
-    SPL_DS_ME(DLL,   current, void)
-    SPL_DS_ME(DLL,   key,     void)
-    SPL_DS_ME(DLL,   next,    void)
-    SPL_DS_ME(DLL,   valid,   void)
+    SPL_DS_DLL_SHARED_METHODS
     PHP_FE_END
 };
 
