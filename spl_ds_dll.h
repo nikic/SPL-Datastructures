@@ -67,7 +67,7 @@ SPL_DS_METHOD(DLL, key);
 SPL_DS_METHOD(DLL, next);
 SPL_DS_METHOD(DLL, valid);
 
-#define SPL_DS_DLL_SHARED_METHODS     \
+#define SPL_DS_DLL_SHARED_METHODS \
     SPL_DS_ME(DLL, clear,   void) \
     SPL_DS_ME(DLL, isEmpty, void) \
     SPL_DS_ME(DLL, toArray, void) \
