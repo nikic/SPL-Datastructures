@@ -124,29 +124,29 @@ SPL_DS_METHOD(LinkedList, unshift)
     spl_ds_dll_add_first(SPL_DS_DLL_GET_LIST(), item);
 }
 
-ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_LinkedList_void, 0)
+ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_void, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_LinkedList_takesItem, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_takesItem, 0, 0, 1)
     ZEND_ARG_INFO(0, item)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_LinkedList[] = {
-    SPL_DS_ME(LinkedList, getFirst, LinkedList_void)
-    SPL_DS_ME(LinkedList, getLast,  LinkedList_void)
-    SPL_DS_ME(LinkedList, pop,      LinkedList_void)
-    SPL_DS_ME(LinkedList, push,     LinkedList_takesItem)
-    SPL_DS_ME(LinkedList, shift,    LinkedList_void)
-    SPL_DS_ME(LinkedList, unshift,  LinkedList_takesItem)
-    SPL_DS_ME(DLL,        clear,    LinkedList_void)
-    SPL_DS_ME(DLL,        isEmpty,  LinkedList_void)
-    SPL_DS_ME(DLL,        toArray,  LinkedList_void)
-    SPL_DS_ME(DLL,        count,    LinkedList_void)
-    SPL_DS_ME(DLL,        rewind,   LinkedList_void)
-    SPL_DS_ME(DLL,        current,  LinkedList_void)
-    SPL_DS_ME(DLL,        key,      LinkedList_void)
-    SPL_DS_ME(DLL,        next,     LinkedList_void)
-    SPL_DS_ME(DLL,        valid,    LinkedList_void)
+    SPL_DS_ME(LinkedList, getFirst, void)
+    SPL_DS_ME(LinkedList, getLast,  void)
+    SPL_DS_ME(LinkedList, pop,      void)
+    SPL_DS_ME(LinkedList, push,     takesItem)
+    SPL_DS_ME(LinkedList, shift,    void)
+    SPL_DS_ME(LinkedList, unshift,  takesItem)
+    SPL_DS_ME(DLL,        clear,    void)
+    SPL_DS_ME(DLL,        isEmpty,  void)
+    SPL_DS_ME(DLL,        toArray,  void)
+    SPL_DS_ME(DLL,        count,    void)
+    SPL_DS_ME(DLL,        rewind,   void)
+    SPL_DS_ME(DLL,        current,  void)
+    SPL_DS_ME(DLL,        key,      void)
+    SPL_DS_ME(DLL,        next,     void)
+    SPL_DS_ME(DLL,        valid,    void)
     PHP_FE_END
 };
 

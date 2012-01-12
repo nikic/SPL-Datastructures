@@ -79,26 +79,26 @@ SPL_DS_METHOD(Queue, push)
     spl_ds_dll_add_last(SPL_DS_DLL_GET_LIST(), item);
 }
 
-ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_Queue_void, 0)
+ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_void, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_Queue_push, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_takesItem, 0, 0, 1)
     ZEND_ARG_INFO(0, item)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_Queue[] = {
-    SPL_DS_ME(Queue, peek,    Queue_void)
-    SPL_DS_ME(Queue, pop,     Queue_void)
-    SPL_DS_ME(Queue, push,    Queue_push)
-    SPL_DS_ME(DLL,   clear,   Queue_void)
-    SPL_DS_ME(DLL,   isEmpty, Queue_void)
-    SPL_DS_ME(DLL,   toArray, Queue_void)
-    SPL_DS_ME(DLL,   count,   Queue_void)
-    SPL_DS_ME(DLL,   rewind,  Queue_void)
-    SPL_DS_ME(DLL,   current, Queue_void)
-    SPL_DS_ME(DLL,   key,     Queue_void)
-    SPL_DS_ME(DLL,   next,    Queue_void)
-    SPL_DS_ME(DLL,   valid,   Queue_void)
+    SPL_DS_ME(Queue, peek,    void)
+    SPL_DS_ME(Queue, pop,     void)
+    SPL_DS_ME(Queue, push,    takesItem)
+    SPL_DS_ME(DLL,   clear,   void)
+    SPL_DS_ME(DLL,   isEmpty, void)
+    SPL_DS_ME(DLL,   toArray, void)
+    SPL_DS_ME(DLL,   count,   void)
+    SPL_DS_ME(DLL,   rewind,  void)
+    SPL_DS_ME(DLL,   current, void)
+    SPL_DS_ME(DLL,   key,     void)
+    SPL_DS_ME(DLL,   next,    void)
+    SPL_DS_ME(DLL,   valid,   void)
     PHP_FE_END
 };
 
