@@ -92,27 +92,41 @@ long spl_ds_dll_count(spl_ds_dll *list)
     return list->count;
 }
 
-void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
+void spl_ds_dll_add_between(spl_ds_dll *list, zval *item, spl_ds_dll_element *prev, spl_ds_dll_element *next)
 {
     spl_ds_dll_element *element = emalloc(sizeof(spl_ds_dll_element));
 
     Z_ADDREF_P(item);
     element->zval = item;
 
-    element->next = NULL;
-    element->prev = list->last;
+    element->prev = prev;
+    element->next = next;
 
-    if (element->prev != NULL) {
-        element->prev->next = element;
-    }
-
-    list->last = element;
-
-    if (list->first == NULL) {
+    // if prev/next exist update their next/prev pointer
+    // if they don't exist it means that the inserted element is first/last
+    if (prev != NULL) {
+        prev->next = element;
+    } else {
         list->first = element;
     }
+    if (next != NULL) {
+        next->prev = element;
+    } else {
+        list->last = element;
+    }
 
+    // keep list count in sync
     list->count++;
+}
+
+void spl_ds_dll_add_first(spl_ds_dll *list, zval *item)
+{
+    spl_ds_dll_add_between(list, item, NULL, list->first);
+}
+
+void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
+{
+    spl_ds_dll_add_between(list, item, list->last, NULL);
 }
 
 zval *spl_ds_dll_get_zval(spl_ds_dll_element *element)
@@ -144,6 +158,7 @@ zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
         return NULL;
     }
 
+    // keep list count in sync
     list->count--;
 
     // remove references to element from prev and next element

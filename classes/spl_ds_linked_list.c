@@ -34,6 +34,23 @@ zend_object_value spl_ds_linked_list_create_handler(zend_class_entry *class_type
     return retval;
 }
 
+SPL_DS_METHOD(LinkedList, getFirst)
+{
+    spl_ds_dll *list;
+    zval *item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't get first element of an empty linked list");
+
+    item = spl_ds_dll_get_first(list);
+    RETURN_ZVAL(item, 1, 1);
+}
+
 SPL_DS_METHOD(LinkedList, getLast)
 {
     spl_ds_dll *list;
@@ -45,7 +62,7 @@ SPL_DS_METHOD(LinkedList, getLast)
 
     list = SPL_DS_DLL_GET_LIST();
 
-    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't peek an empty linked list");
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't get last element of an empty linked list");
 
     item = spl_ds_dll_get_last(list);
     RETURN_ZVAL(item, 1, 1);
@@ -79,26 +96,57 @@ SPL_DS_METHOD(LinkedList, push)
     spl_ds_dll_add_last(SPL_DS_DLL_GET_LIST(), item);
 }
 
+SPL_DS_METHOD(LinkedList, shift)
+{
+    spl_ds_dll *list;
+    zval *item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    SPL_DS_DLL_ENSURE_NOT_EMPTY(list, "Can't shift an empty linked list");
+
+    item = spl_ds_dll_remove_first(list);
+    RETURN_ZVAL(item, 1, 1);
+}
+
+SPL_DS_METHOD(LinkedList, unshift)
+{
+    zval *item;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
+        return;
+    }
+
+    spl_ds_dll_add_first(SPL_DS_DLL_GET_LIST(), item);
+}
+
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_LinkedList_void, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_LinkedList_push, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_LinkedList_takesItem, 0, 0, 1)
     ZEND_ARG_INFO(0, item)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_LinkedList[] = {
-    SPL_DS_ME(LinkedList, getLast, LinkedList_void)
-    SPL_DS_ME(LinkedList, pop,     LinkedList_void)
-    SPL_DS_ME(LinkedList, push,    LinkedList_push)
-    SPL_DS_ME(DLL,        clear,   LinkedList_void)
-    SPL_DS_ME(DLL,        isEmpty, LinkedList_void)
-    SPL_DS_ME(DLL,        toArray, LinkedList_void)
-    SPL_DS_ME(DLL,        count,   LinkedList_void)
-    SPL_DS_ME(DLL,        rewind,  LinkedList_void)
-    SPL_DS_ME(DLL,        current, LinkedList_void)
-    SPL_DS_ME(DLL,        key,     LinkedList_void)
-    SPL_DS_ME(DLL,        next,    LinkedList_void)
-    SPL_DS_ME(DLL,        valid,   LinkedList_void)
+    SPL_DS_ME(LinkedList, getFirst, LinkedList_void)
+    SPL_DS_ME(LinkedList, getLast,  LinkedList_void)
+    SPL_DS_ME(LinkedList, pop,      LinkedList_void)
+    SPL_DS_ME(LinkedList, push,     LinkedList_takesItem)
+    SPL_DS_ME(LinkedList, shift,    LinkedList_void)
+    SPL_DS_ME(LinkedList, unshift,  LinkedList_takesItem)
+    SPL_DS_ME(DLL,        clear,    LinkedList_void)
+    SPL_DS_ME(DLL,        isEmpty,  LinkedList_void)
+    SPL_DS_ME(DLL,        toArray,  LinkedList_void)
+    SPL_DS_ME(DLL,        count,    LinkedList_void)
+    SPL_DS_ME(DLL,        rewind,   LinkedList_void)
+    SPL_DS_ME(DLL,        current,  LinkedList_void)
+    SPL_DS_ME(DLL,        key,      LinkedList_void)
+    SPL_DS_ME(DLL,        next,     LinkedList_void)
+    SPL_DS_ME(DLL,        valid,    LinkedList_void)
     PHP_FE_END
 };
 
