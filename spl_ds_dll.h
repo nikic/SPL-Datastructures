@@ -21,20 +21,32 @@ typedef struct _spl_ds_dll {
 
 /* Internal DLL API */
 spl_ds_dll *spl_ds_dll_create();
-void spl_ds_dll_clear(spl_ds_dll *list);
 spl_ds_dll *spl_ds_dll_clone(spl_ds_dll *orig);
+
+void spl_ds_dll_clear(spl_ds_dll *list);
 zval *spl_ds_dll_to_array(spl_ds_dll *list);
 zend_bool spl_ds_dll_is_empty(spl_ds_dll *list);
 long spl_ds_dll_count(spl_ds_dll *list);
 
-void spl_ds_dll_add_first(spl_ds_dll *list, zval *item);
-void spl_ds_dll_add_last (spl_ds_dll *list, zval *item);
+void spl_ds_dll_insert_first         (spl_ds_dll *list, zval *item);
+void spl_ds_dll_insert_last          (spl_ds_dll *list, zval *item);
+void spl_ds_dll_insert_after_current (spl_ds_dll *list, zval *item);
+void spl_ds_dll_insert_before_current(spl_ds_dll *list, zval *item);
 
-zval *spl_ds_dll_get_first(spl_ds_dll *list);
-zval *spl_ds_dll_get_last (spl_ds_dll *list);
+zval *spl_ds_dll_replace_current(spl_ds_dll *list, zval *item);
 
-zval *spl_ds_dll_remove_first(spl_ds_dll *list);
-zval *spl_ds_dll_remove_last (spl_ds_dll *list);
+zval *spl_ds_dll_get_first  (spl_ds_dll *list);
+zval *spl_ds_dll_get_last   (spl_ds_dll *list);
+zval *spl_ds_dll_get_current(spl_ds_dll *list);
+
+zval *spl_ds_dll_remove_first  (spl_ds_dll *list);
+zval *spl_ds_dll_remove_last   (spl_ds_dll *list);
+zval *spl_ds_dll_remove_current(spl_ds_dll *list);
+
+void spl_ds_dll_iterator_rewind           (spl_ds_dll *list);
+long spl_ds_dll_iterator_get_current_index(spl_ds_dll *list);
+zend_bool spl_ds_dll_iterator_is_valid    (spl_ds_dll *list);
+void spl_ds_dll_iterator_move_forward     (spl_ds_dll *list);
 
 /* PHP object wrapper around DLL */
 typedef struct _spl_ds_dll_object {
@@ -50,6 +62,16 @@ typedef struct _spl_ds_dll_object {
     if (spl_ds_dll_is_empty((list))) {                                       \
         zend_throw_exception(spl_ce_UnderflowException, (msg), 0 TSRMLS_CC); \
         return;                                                              \
+    }
+
+#define SPL_DS_DLL_ENSURE_ITERATOR_IS_VALID(list) \
+    if (!spl_ds_dll_iterator_is_valid((list))) {  \
+        zend_throw_exception(                     \
+            spl_ce_RuntimeException, /* TODO: Find appropriate exception */ \
+            "Iterator is out of bounds",          \
+            0 TSRMLS_CC                           \
+        );                                        \
+        return;                                   \
     }
 
 /* PHP object handlers */

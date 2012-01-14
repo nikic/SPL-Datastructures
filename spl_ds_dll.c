@@ -25,6 +25,23 @@ spl_ds_dll *spl_ds_dll_create()
     return list;
 }
 
+spl_ds_dll *spl_ds_dll_clone(spl_ds_dll *orig)
+{
+    spl_ds_dll *clone = spl_ds_dll_create();
+
+    if (orig->first != NULL) {
+        spl_ds_dll_element *current = orig->first;
+
+        do {
+            spl_ds_dll_insert_last(clone, current->zval);
+            
+            current = current->next;
+        } while (current != NULL);
+    }
+
+    return clone;
+}
+
 void spl_ds_dll_clear(spl_ds_dll *list)
 {
     while (list->first != NULL) {
@@ -42,23 +59,6 @@ void spl_ds_dll_clear(spl_ds_dll *list)
 void spl_ds_dll_free(spl_ds_dll *list) {
     spl_ds_dll_clear(list);
     efree(list);
-}
-
-spl_ds_dll *spl_ds_dll_clone(spl_ds_dll *orig)
-{
-    spl_ds_dll *clone = spl_ds_dll_create();
-
-    if (orig->first != NULL) {
-        spl_ds_dll_element *current = orig->first;
-
-        do {
-            spl_ds_dll_add_last(clone, current->zval);
-            
-            current = current->next;
-        } while (current != NULL);
-    }
-
-    return clone;
 }
 
 zval *spl_ds_dll_to_array(spl_ds_dll *list)
@@ -92,7 +92,7 @@ long spl_ds_dll_count(spl_ds_dll *list)
     return list->count;
 }
 
-void spl_ds_dll_add_between(spl_ds_dll *list, zval *item, spl_ds_dll_element *prev, spl_ds_dll_element *next)
+void spl_ds_dll_insert_between(spl_ds_dll *list, zval *item, spl_ds_dll_element *prev, spl_ds_dll_element *next)
 {
     spl_ds_dll_element *element = emalloc(sizeof(spl_ds_dll_element));
 
@@ -119,14 +119,48 @@ void spl_ds_dll_add_between(spl_ds_dll *list, zval *item, spl_ds_dll_element *pr
     list->count++;
 }
 
-void spl_ds_dll_add_first(spl_ds_dll *list, zval *item)
+void spl_ds_dll_insert_first(spl_ds_dll *list, zval *item)
 {
-    spl_ds_dll_add_between(list, item, NULL, list->first);
+    spl_ds_dll_insert_between(list, item, NULL, list->first);
 }
 
-void spl_ds_dll_add_last(spl_ds_dll *list, zval *item)
+void spl_ds_dll_insert_last(spl_ds_dll *list, zval *item)
 {
-    spl_ds_dll_add_between(list, item, list->last, NULL);
+    spl_ds_dll_insert_between(list, item, list->last, NULL);
+}
+
+void spl_ds_dll_insert_before_current(spl_ds_dll *list, zval *item)
+{
+    if (list->current == NULL) {
+        return;
+    }
+
+    spl_ds_dll_insert_between(list, item, list->current->prev, list->current);
+}
+
+void spl_ds_dll_insert_after_current(spl_ds_dll *list, zval *item)
+{
+    if (list->current == NULL) {
+        return;
+    }
+
+    spl_ds_dll_insert_between(list, item, list->current, list->current->next);
+}
+
+zval *spl_ds_dll_replace_current(spl_ds_dll *list, zval *item)
+{
+    zval *retval;
+
+    if (list->current == NULL) {
+        return;
+    }
+
+    retval = list->current->zval;
+
+    Z_ADDREF_P(item);
+    list->current->zval = item;
+
+    return retval;
 }
 
 zval *spl_ds_dll_get_zval(spl_ds_dll_element *element)
@@ -147,6 +181,11 @@ zval *spl_ds_dll_get_first(spl_ds_dll *list)
 zval *spl_ds_dll_get_last(spl_ds_dll *list)
 {
     return spl_ds_dll_get_zval(list->last);
+}
+
+zval *spl_ds_dll_get_current(spl_ds_dll *list)
+{
+    return spl_ds_dll_get_zval(list->current);
 }
 
 zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
@@ -194,15 +233,20 @@ zval *spl_ds_dll_remove_last(spl_ds_dll *list)
     return spl_ds_dll_remove_element(list, list->last);
 }
 
+zval *spl_ds_dll_remove_current(spl_ds_dll *list)
+{
+    spl_ds_dll_element *next = list->current->next;
+    zval *retval = spl_ds_dll_remove_element(list, list->current);
+
+    list->current = next;
+
+    return retval;
+}
+
 void spl_ds_dll_iterator_rewind(spl_ds_dll *list)
 {
     list->current       = list->first;
     list->current_index = 0;
-}
-
-zval *spl_ds_dll_iterator_get_current_value(spl_ds_dll *list)
-{
-    return spl_ds_dll_get_zval(list->current);
 }
 
 long spl_ds_dll_iterator_get_current_index(spl_ds_dll *list)
@@ -312,7 +356,7 @@ SPL_DS_METHOD(DLL, current)
         return;
     }
 
-    item = spl_ds_dll_iterator_get_current_value(list);
+    item = spl_ds_dll_get_current(list);
     RETURN_ZVAL(item, 1, 1);
 }
 

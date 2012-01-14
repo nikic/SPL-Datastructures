@@ -85,17 +85,6 @@ SPL_DS_METHOD(LinkedList, pop)
     RETURN_ZVAL(item, 1, 1);
 }
 
-SPL_DS_METHOD(LinkedList, push)
-{
-    zval *item;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
-        return;
-    }
-
-    spl_ds_dll_add_last(SPL_DS_DLL_GET_LIST(), item);
-}
-
 SPL_DS_METHOD(LinkedList, shift)
 {
     spl_ds_dll *list;
@@ -113,6 +102,17 @@ SPL_DS_METHOD(LinkedList, shift)
     RETURN_ZVAL(item, 1, 1);
 }
 
+SPL_DS_METHOD(LinkedList, push)
+{
+    zval *item;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
+        return;
+    }
+
+    spl_ds_dll_insert_last(SPL_DS_DLL_GET_LIST(), item);
+}
+
 SPL_DS_METHOD(LinkedList, unshift)
 {
     zval *item;
@@ -121,7 +121,73 @@ SPL_DS_METHOD(LinkedList, unshift)
         return;
     }
 
-    spl_ds_dll_add_first(SPL_DS_DLL_GET_LIST(), item);
+    spl_ds_dll_insert_first(SPL_DS_DLL_GET_LIST(), item);
+}
+
+SPL_DS_METHOD(LinkedList, insertBeforeCurrent)
+{
+    spl_ds_dll *list;
+    zval *item;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    SPL_DS_DLL_ENSURE_ITERATOR_IS_VALID(list);
+
+    spl_ds_dll_insert_before_current(list, item);
+}
+
+SPL_DS_METHOD(LinkedList, insertAfterCurrent)
+{
+    spl_ds_dll *list;
+    zval *item;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &item) == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    SPL_DS_DLL_ENSURE_ITERATOR_IS_VALID(list);
+
+    spl_ds_dll_insert_after_current(list, item);
+}
+
+SPL_DS_METHOD(LinkedList, replaceCurrent)
+{
+    spl_ds_dll *list;
+    zval *new, *old;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &new) == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    SPL_DS_DLL_ENSURE_ITERATOR_IS_VALID(list);
+
+    old = spl_ds_dll_replace_current(list, new);
+    RETURN_ZVAL(old, 1, 1);
+}
+
+SPL_DS_METHOD(LinkedList, removeCurrent)
+{
+    spl_ds_dll *list;
+    zval *item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    list = SPL_DS_DLL_GET_LIST();
+
+    SPL_DS_DLL_ENSURE_ITERATOR_IS_VALID(list);
+
+    item = spl_ds_dll_remove_current(list);
+    RETURN_ZVAL(item, 1, 1);
 }
 
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_void, 0)
@@ -132,12 +198,16 @@ ZEND_BEGIN_ARG_INFO_EX(spl_ds_arg_info_takesItem, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 const zend_function_entry spl_ds_methods_LinkedList[] = {
-    SPL_DS_ME(LinkedList, getFirst, void)
-    SPL_DS_ME(LinkedList, getLast,  void)
-    SPL_DS_ME(LinkedList, pop,      void)
-    SPL_DS_ME(LinkedList, push,     takesItem)
-    SPL_DS_ME(LinkedList, shift,    void)
-    SPL_DS_ME(LinkedList, unshift,  takesItem)
+    SPL_DS_ME(LinkedList, getFirst,            void)
+    SPL_DS_ME(LinkedList, getLast,             void)
+    SPL_DS_ME(LinkedList, pop,                 void)
+    SPL_DS_ME(LinkedList, shift,               void)
+    SPL_DS_ME(LinkedList, push,                takesItem)
+    SPL_DS_ME(LinkedList, unshift,             takesItem)
+    SPL_DS_ME(LinkedList, insertBeforeCurrent, takesItem)
+    SPL_DS_ME(LinkedList, insertAfterCurrent,  takesItem)
+    SPL_DS_ME(LinkedList, replaceCurrent,      takesItem)
+    SPL_DS_ME(LinkedList, removeCurrent,       void)
     SPL_DS_DLL_SHARED_METHODS
     PHP_FE_END
 };

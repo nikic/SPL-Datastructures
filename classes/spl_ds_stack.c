@@ -76,7 +76,7 @@ SPL_DS_METHOD(Stack, push)
         return;
     }
 
-    spl_ds_dll_add_last(SPL_DS_DLL_GET_LIST(), item);
+    spl_ds_dll_insert_last(SPL_DS_DLL_GET_LIST(), item);
 }
 
 ZEND_BEGIN_ARG_INFO(spl_ds_arg_info_void, 0)
