@@ -216,6 +216,11 @@ zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
         list->last = element->prev;
     }
 
+    // if element is current element advance to next element (but keep index)
+    if (element == list->current) {
+        list->current = element->next;
+    }
+
     retval = element->zval;
 
     efree(element);
@@ -235,12 +240,7 @@ zval *spl_ds_dll_remove_last(spl_ds_dll *list)
 
 zval *spl_ds_dll_remove_current(spl_ds_dll *list)
 {
-    spl_ds_dll_element *next = list->current->next;
-    zval *retval = spl_ds_dll_remove_element(list, list->current);
-
-    list->current = next;
-
-    return retval;
+    return spl_ds_dll_remove_element(list, list->current);
 }
 
 void spl_ds_dll_iterator_rewind(spl_ds_dll *list)
