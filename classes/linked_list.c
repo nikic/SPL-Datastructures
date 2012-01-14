@@ -4,7 +4,7 @@
 
 #include "php.h"
 #include "php_spl_ds.h"
-#include "spl_ds_collection.h"
+#include "collection.h"
 #include "spl_ds_dll.h"
 #include "spl/spl_exceptions.h"
 #include "zend_interfaces.h"

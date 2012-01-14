@@ -4,10 +4,10 @@
 
 #include "php.h"
 #include "php_spl_ds.h"
-#include "classes/spl_ds_collection.h"
-#include "classes/spl_ds_stack.h"
-#include "classes/spl_ds_queue.h"
-#include "classes/spl_ds_linked_list.h"
+#include "classes/collection.h"
+#include "classes/stack.h"
+#include "classes/queue.h"
+#include "classes/linked_list.h"
 
 PHP_MINIT_FUNCTION(spl_datastructures)
 {
