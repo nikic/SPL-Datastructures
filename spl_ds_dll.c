@@ -92,7 +92,7 @@ long spl_ds_dll_count(spl_ds_dll *list)
     return list->count;
 }
 
-void spl_ds_dll_insert_between(spl_ds_dll *list, zval *item, spl_ds_dll_element *prev, spl_ds_dll_element *next)
+static void spl_ds_dll_insert_between(spl_ds_dll *list, zval *item, spl_ds_dll_element *prev, spl_ds_dll_element *next)
 {
     spl_ds_dll_element *element = emalloc(sizeof(spl_ds_dll_element));
 
@@ -152,7 +152,7 @@ zval *spl_ds_dll_replace_current(spl_ds_dll *list, zval *item)
     zval *retval;
 
     if (list->current == NULL) {
-        return;
+        return NULL;
     }
 
     retval = list->current->zval;
@@ -163,7 +163,7 @@ zval *spl_ds_dll_replace_current(spl_ds_dll *list, zval *item)
     return retval;
 }
 
-zval *spl_ds_dll_get_zval(spl_ds_dll_element *element)
+static zval *spl_ds_dll_get_zval(spl_ds_dll_element *element)
 {
     if (element == NULL) {
         return NULL;
@@ -188,7 +188,7 @@ zval *spl_ds_dll_get_current(spl_ds_dll *list)
     return spl_ds_dll_get_zval(list->current);
 }
 
-zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
+static zval *spl_ds_dll_remove_element(spl_ds_dll *list, spl_ds_dll_element *element)
 {
     zval *retval;
 
